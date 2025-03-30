@@ -4,6 +4,7 @@ from modelling.modelling import *
 from modelling.data_model import *
 from Architectures.Chained_Multi_output import *
 from Architectures.Hierarchical import *
+from Architectures.Hierarchical_model import *
 import random
 seed =0
 random.seed(seed)
@@ -35,16 +36,19 @@ def perform_modelling(data: Data, df: pd.DataFrame, name):
     model_predict(data, df, name)
 
 if __name__ == '__main__':
+    
     df = load_data() 
     df = preprocess_data(df)
     df[Config.INTERACTION_CONTENT] = df[Config.INTERACTION_CONTENT].values.astype('U')
     df[Config.TICKET_SUMMARY] = df[Config.TICKET_SUMMARY].values.astype('U')
     df.insert(0, 'ID', range(len(df)))
     df.to_csv('original_data.csv', index=False) #to visualize
+
+    #Start Hierarchical Architecture
+    hierarchical = Hierarchical(Config.GROUPED, Config.TYPE_COLS, df)
+    hierarchical.prediction()
+    hierarchical.get_prediction_csv()
+    hierarchical.get_results_csv()
     
     #Start Chained Multi-output Architecture
     chained_multioutput_prediction(df)
-    
-    #Start Hierarchical Architecture
-    hierarchical_prediction(df)
-
